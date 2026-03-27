@@ -89,6 +89,7 @@ public class NutritionService : INutritionService
         dto.IdealWeight = isFemale
             ? Math.Round(45.5 + 2.3 * (heightInches - 60), 1)
             : Math.Round(50.0 + 2.3 * (heightInches - 60), 1);
+        if (dto.IdealWeight < 0) dto.IdealWeight = 0;
 
         // Body Fat % estimate (BMI-based: Deurenberg formula)
         dto.BodyFatPercentage = Math.Round(
