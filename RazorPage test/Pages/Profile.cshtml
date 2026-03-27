@@ -114,3 +114,131 @@
                 </div>
             }
         </div>
+
+        @if (Model.Profile.Bmi > 0)
+        {
+        <!-- Extended Health Indicators -->
+        <div style="margin-top:32px;">
+            <h2 style="font-size:22px; font-weight:700; color:#0f172a; margin-bottom:20px;">📋 Chi so suc khoe chi tiet</h2>
+
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin-bottom:24px;">
+                <!-- BMR -->
+                <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                        <span style="font-size:28px;">🔥</span>
+                        <div>
+                            <div style="font-size:24px; font-weight:800; color:#0f172a;">@Model.Profile.Bmr <span style="font-size:14px; color:#64748b; font-weight:400;">kcal/ngay</span></div>
+                            <div style="font-size:13px; font-weight:600; color:#64748b;">BMR - Ti le trao doi chat co ban</div>
+                        </div>
+                    </div>
+                    <p style="font-size:12px; color:#94a3b8; margin:8px 0 0; line-height:1.5;">
+                        <strong>BMR (Basal Metabolic Rate)</strong> la luong calo toi thieu co the ban can de duy tri cac chuc nang song co ban
+                        (tho, tuan hoan mau, hoat dong te bao) khi nghi ngoi hoan toan. Day la luong nang luong ban tieu hao
+                        ngay ca khi nam yen ca ngay. Cong thuc Harris-Benedict duoc su dung de tinh toan.
+                    </p>
+                </div>
+
+                <!-- TDEE Before Goal -->
+                <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                        <span style="font-size:28px;">⚡</span>
+                        <div>
+                            <div style="font-size:24px; font-weight:800; color:#0f172a;">@Model.Profile.TdeeBeforeGoal <span style="font-size:14px; color:#64748b; font-weight:400;">kcal/ngay</span></div>
+                            <div style="font-size:13px; font-weight:600; color:#64748b;">TDEE - Tong nang luong tieu hao</div>
+                        </div>
+                    </div>
+                    <p style="font-size:12px; color:#94a3b8; margin:8px 0 0; line-height:1.5;">
+                        <strong>TDEE (Total Daily Energy Expenditure)</strong> = BMR x he so van dong.
+                        Day la tong so calo ban thuc su tieu hao moi ngay, bao gom ca hoat dong the chat.
+                        Neu ban an dung bang TDEE, can nang se giu nguyen. An it hon TDEE se giam can, nhieu hon se tang can.
+                        Chi so nay chua dieu chinh theo muc tieu cua ban.
+                    </p>
+                </div>
+
+                <!-- Ideal Weight -->
+                <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                        <span style="font-size:28px;">⚖️</span>
+                        <div>
+                            <div style="font-size:24px; font-weight:800; color:#0f172a;">@Model.Profile.IdealWeight <span style="font-size:14px; color:#64748b; font-weight:400;">kg</span></div>
+                            <div style="font-size:13px; font-weight:600; color:#64748b;">Can nang ly tuong (Devine)</div>
+                        </div>
+                    </div>
+                    <p style="font-size:12px; color:#94a3b8; margin:8px 0 0; line-height:1.5;">
+                        <strong>Can nang ly tuong</strong> duoc tinh theo cong thuc Devine dua tren chieu cao va gioi tinh.
+                        Day la muc can nang tham chieu giup ban danh gia xem minh dang o muc nao so voi chuan.
+                        Hien tai ban nang <strong>@Model.Profile.Weight kg</strong>,
+                        @if (Model.Profile.Weight > Model.Profile.IdealWeight) {
+                            <span>nhieu hon can nang ly tuong <strong>@(Math.Round(Model.Profile.Weight - Model.Profile.IdealWeight, 1)) kg</strong>.</span>
+                        } else if (Model.Profile.Weight < Model.Profile.IdealWeight) {
+                            <span>it hon can nang ly tuong <strong>@(Math.Round(Model.Profile.IdealWeight - Model.Profile.Weight, 1)) kg</strong>.</span>
+                        } else {
+                            <span>dung bang can nang ly tuong!</span>
+                        }
+                    </p>
+                </div>
+
+                <!-- Body Fat % -->
+                <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                        <span style="font-size:28px;">📏</span>
+                        <div>
+                            <div style="font-size:24px; font-weight:800; color:#0f172a;">@Model.Profile.BodyFatPercentage<span style="font-size:14px; color:#64748b; font-weight:400;">%</span></div>
+                            <div style="font-size:13px; font-weight:600; color:#64748b;">Ti le mo co the (uoc tinh)</div>
+                        </div>
+                    </div>
+                    <p style="font-size:12px; color:#94a3b8; margin:8px 0 0; line-height:1.5;">
+                        <strong>Ti le mo co the</strong> duoc uoc tinh theo cong thuc Deurenberg dua tren BMI, tuoi va gioi tinh.
+                        Muc khoe manh: Nam 10-20%, Nu 18-28%. Ti le mo qua cao lam tang nguy co benh tim mach,
+                        tieu duong type 2 va cac benh man tinh khac. Day la gia tri uoc tinh, do chinh xac hon bang may do.
+                    </p>
+                </div>
+
+                <!-- Water Intake -->
+                <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                        <span style="font-size:28px;">💧</span>
+                        <div>
+                            <div style="font-size:24px; font-weight:800; color:#0f172a;">@Model.Profile.DailyWaterLiters <span style="font-size:14px; color:#64748b; font-weight:400;">lit/ngay</span></div>
+                            <div style="font-size:13px; font-weight:600; color:#64748b;">Luong nuoc khuyen nghi</div>
+                        </div>
+                    </div>
+                    <p style="font-size:12px; color:#94a3b8; margin:8px 0 0; line-height:1.5;">
+                        <strong>Luong nuoc khuyen nghi</strong> duoc tinh khoang 33ml cho moi kg can nang.
+                        Uong du nuoc giup co the hap thu dinh duong tot hon, ho tro trao doi chat, lam dep da,
+                        va giam cam giac them an. Nen uong deu trong ngay, khong doi khat moi uong.
+                        Khi tap luyen hoac troi nong nen uong nhieu hon 0.5-1 lit.
+                    </p>
+                </div>
+
+                <!-- Macro Breakdown -->
+                <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+                    <div style="display:flex; align-items:center; gap:12px; margin-bottom:8px;">
+                        <span style="font-size:28px;">🥩</span>
+                        <div>
+                            <div style="font-size:13px; font-weight:600; color:#64748b; margin-bottom:4px;">Phan bo dinh duong da luong</div>
+                        </div>
+                    </div>
+                    <div style="display:flex; gap:16px; margin:12px 0;">
+                        <div style="text-align:center; flex:1; background:#fef3c7; border-radius:12px; padding:12px 8px;">
+                            <div style="font-size:20px; font-weight:800; color:#d97706;">@Model.Profile.ProteinGrams g</div>
+                            <div style="font-size:11px; color:#92400e; font-weight:600;">Protein (25%)</div>
+                        </div>
+                        <div style="text-align:center; flex:1; background:#dbeafe; border-radius:12px; padding:12px 8px;">
+                            <div style="font-size:20px; font-weight:800; color:#2563eb;">@Model.Profile.CarbGrams g</div>
+                            <div style="font-size:11px; color:#1e40af; font-weight:600;">Carbs (50%)</div>
+                        </div>
+                        <div style="text-align:center; flex:1; background:#fce7f3; border-radius:12px; padding:12px 8px;">
+                            <div style="font-size:20px; font-weight:800; color:#db2777;">@Model.Profile.FatGrams g</div>
+                            <div style="font-size:11px; color:#9d174d; font-weight:600;">Fat (25%)</div>
+                        </div>
+                    </div>
+                    <p style="font-size:12px; color:#94a3b8; margin:8px 0 0; line-height:1.5;">
+                        <strong>Macro</strong> gom 3 nhom chinh: <strong>Protein</strong> (xay dung co bap, 4 kcal/g),
+                        <strong>Carbs</strong> (nguon nang luong chinh, 4 kcal/g), <strong>Fat</strong> (ho tro hormone va hap thu vitamin, 9 kcal/g).
+                        Ti le 25/50/25 phu hop voi da so nguoi. Neu tang co, co the tang protein len 30-35%.
+                    </p>
+                </div>
+            </div>
+        </div>
+        }

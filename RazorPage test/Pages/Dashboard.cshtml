@@ -237,8 +237,11 @@
             for (let i = 6; i >= 0; i--) {
                 let d = new Date();
                 d.setDate(d.getDate() - i);
-                let dateStr = d.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit'});
-                labels.push(dateStr);
+                // Use dd/MM format matching server-side ToString("dd/MM")
+                let dd = String(d.getDate()).padStart(2, '0');
+                let mm = String(d.getMonth() + 1).padStart(2, '0');
+                let dateStr = dd + '/' + mm;
+                labels.push(dd + '-' + mm);
                 
                 let matchingRecord = rawData.find(x => x.date === dateStr);
                 caloData.push(matchingRecord ? matchingRecord.calo : 0);

@@ -14,6 +14,16 @@ public class UserProfileDto
     public double Bmi { get; set; }
     public double Tdee { get; set; }
     public string BmiCategory { get; set; } = string.Empty;
+
+    // Extended health indicators
+    public double Bmr { get; set; }
+    public double TdeeBeforeGoal { get; set; }
+    public double IdealWeight { get; set; }
+    public double BodyFatPercentage { get; set; }
+    public double DailyWaterLiters { get; set; }
+    public double ProteinGrams { get; set; }
+    public double CarbGrams { get; set; }
+    public double FatGrams { get; set; }
 }
 
 public class ChatMessageDto
