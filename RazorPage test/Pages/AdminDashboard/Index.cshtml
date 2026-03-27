@@ -77,6 +77,86 @@
     </div>
 </div>
 
+<!-- Extra Stats Row -->
+<div class="row g-4 mt-1">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="bg-success bg-opacity-10 text-success rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width:48px;height:48px;font-size:20px;">
+                    <i class="bi bi-person-plus-fill"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-0 small">User moi thang nay</h6>
+                    <h4 class="mb-0 fw-bold">@Model.NewUsersThisMonth</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="bg-warning bg-opacity-10 text-warning rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width:48px;height:48px;font-size:20px;">
+                    <i class="bi bi-crown-fill"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-0 small">Luot mua VIP</h6>
+                    <h4 class="mb-0 fw-bold">@Model.TotalVipPurchases</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="bg-info bg-opacity-10 text-info rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width:48px;height:48px;font-size:20px;">
+                    <i class="bi bi-graph-up-arrow"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-0 small">Ti le chuyen doi VIP</h6>
+                    <h4 class="mb-0 fw-bold">@Model.VipConversionRate%</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-body d-flex align-items-center">
+                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center me-3 flex-shrink-0" style="width:48px;height:48px;font-size:20px;">
+                    <i class="bi bi-activity"></i>
+                </div>
+                <div>
+                    <h6 class="text-muted mb-0 small">User hoat dong 7 ngay</h6>
+                    <h4 class="mb-0 fw-bold">@Model.ActiveUsersLast7Days</h4>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row: Role Distribution + Monthly Revenue -->
+<div class="row g-4 mt-1">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-white border-bottom py-3 px-4">
+                <h5 class="m-0 fw-bold text-dark"><i class="bi bi-pie-chart-fill text-primary"></i> Phan bo vai tro</h5>
+            </div>
+            <div class="card-body p-4 d-flex align-items-center justify-content-center">
+                <canvas id="roleChart" style="max-height:260px;"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm rounded-4 h-100">
+            <div class="card-header bg-white border-bottom py-3 px-4">
+                <h5 class="m-0 fw-bold text-dark"><i class="bi bi-bar-chart-line-fill text-success"></i> Doanh thu theo thang (6 thang)</h5>
+            </div>
+            <div class="card-body p-4">
+                <canvas id="monthlyChart" style="width:100%; height:260px;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="card card-stat border-0 shadow-sm rounded-4 mt-4 mb-5">
     <div class="card-header bg-white border-bottom py-3 px-4 d-flex justify-content-between align-items-center">
         <h5 class="m-0 fw-bold text-dark">Giao dịch gần đây</h5>
@@ -129,3 +209,79 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // ── 1. Revenue Bar Chart (7 days) ──
+    const revLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Last7DaysLabels));
+    const revData   = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Last7DaysRevenue));
+    new Chart(document.getElementById('revenueChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: revLabels,
+            datasets: [{
+                label: 'Doanh thu (VND)',
+                data: revData,
+                backgroundColor: 'rgba(59, 130, 246, 0.7)',
+                borderColor: '#3b82f6',
+                borderWidth: 1,
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { callback: v => v.toLocaleString('vi-VN') + ' d' }, grid: { color: '#f1f5f9' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // ── 2. Role Doughnut Chart ──
+    new Chart(document.getElementById('roleChart').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: ['Admin', 'VIP', 'User'],
+            datasets: [{
+                data: [@Model.CountAdmin, @Model.CountVip, @Model.CountUser],
+                backgroundColor: ['#6366f1', '#f59e0b', '#3b82f6'],
+                borderWidth: 2, borderColor: '#fff'
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: true,
+            plugins: {
+                legend: { position: 'bottom', labels: { padding: 16, font: { size: 13 } } }
+            }
+        }
+    });
+
+    // ── 3. Monthly Revenue Line Chart (6 months) ──
+    const monthLabels = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyLabels));
+    const monthData   = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.MonthlyRevenue));
+    new Chart(document.getElementById('monthlyChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: monthLabels,
+            datasets: [{
+                label: 'Doanh thu',
+                data: monthData,
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16,185,129,0.1)',
+                borderWidth: 3, fill: true, tension: 0.3,
+                pointRadius: 5, pointBackgroundColor: '#fff', pointBorderColor: '#10b981', pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, ticks: { callback: v => (v/1000000).toFixed(1) + 'M' }, grid: { color: '#f1f5f9' } },
+                x: { grid: { display: false } }
+            }
+        }
+    });
+</script>
+}

@@ -57,9 +57,11 @@ public class NutritionService : INutritionService
         };
 
         // Harris-Benedict BMR
-        double bmr = dto.Gender.ToLower() == "nu"
+        bool isFemale = dto.Gender.ToLower() == "nu";
+        double bmr = isFemale
             ? 655 + (9.563 * dto.Weight) + (1.850 * dto.Height) - (4.676 * dto.Age)
             : 88.362 + (13.397 * dto.Weight) + (4.799 * dto.Height) - (5.677 * dto.Age);
+        dto.Bmr = Math.Round(bmr, 0);
 
         double activityMultiplier = dto.ActivityLevel switch
         {
@@ -71,14 +73,37 @@ public class NutritionService : INutritionService
         };
 
         double tdee = bmr * activityMultiplier;
+        dto.TdeeBeforeGoal = Math.Round(tdee, 0);
 
         // Adjust by goal
-        dto.Tdee = Math.Round(dto.Goal switch
+        double adjustedTdee = dto.Goal switch
         {
             "GiamCan" => tdee - 500,
             "TangCo"  => tdee + 300,
             _         => tdee           // DuyTri
-        }, 0);
+        };
+        dto.Tdee = Math.Round(adjustedTdee, 0);
+
+        // Ideal Body Weight (Devine formula)
+        double heightInches = dto.Height / 2.54;
+        dto.IdealWeight = isFemale
+            ? Math.Round(45.5 + 2.3 * (heightInches - 60), 1)
+            : Math.Round(50.0 + 2.3 * (heightInches - 60), 1);
+        if (dto.IdealWeight < 0) dto.IdealWeight = 0;
+
+        // Body Fat % estimate (BMI-based: Deurenberg formula)
+        dto.BodyFatPercentage = Math.Round(
+            (1.20 * dto.Bmi) + (0.23 * dto.Age) - (isFemale ? 5.4 : 16.2), 1);
+        if (dto.BodyFatPercentage < 3) dto.BodyFatPercentage = 3;
+
+        // Daily water intake (approx 0.033 L per kg body weight)
+        dto.DailyWaterLiters = Math.Round(dto.Weight * 0.033, 1);
+
+        // Macro breakdown based on adjusted TDEE
+        // Protein: 25%, Carbs: 50%, Fat: 25%
+        dto.ProteinGrams = Math.Round(adjustedTdee * 0.25 / 4, 0);   // 4 kcal/g
+        dto.CarbGrams    = Math.Round(adjustedTdee * 0.50 / 4, 0);   // 4 kcal/g
+        dto.FatGrams     = Math.Round(adjustedTdee * 0.25 / 9, 0);   // 9 kcal/g
 
         return dto;
     }
