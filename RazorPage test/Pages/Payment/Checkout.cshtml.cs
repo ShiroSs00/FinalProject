@@ -1,4 +1,6 @@
 using BLL.Services;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -10,10 +12,12 @@ namespace RazorPage_test.Pages.Payment;
 public class CheckoutModel : PageModel
 {
     private readonly ITransactionService _transactionService;
+    private readonly IUserService _userService;
 
-    public CheckoutModel(ITransactionService transactionService)
+    public CheckoutModel(ITransactionService transactionService, IUserService userService)
     {
         _transactionService = transactionService;
+        _userService = userService;
     }
 
     [BindProperty]
@@ -34,7 +38,7 @@ public class CheckoutModel : PageModel
         return Page();
     }
 
-    public IActionResult OnPost()
+    public async Task<IActionResult> OnPostAsync()
     {
         var userIdStr = User.FindFirstValue(ClaimTypes.NameIdentifier);
         if (int.TryParse(userIdStr, out int userId))
@@ -42,6 +46,26 @@ public class CheckoutModel : PageModel
             var result = _transactionService.ProcessPayment(userId, Amount, Type);
             if (result.Success)
             {
+                // Refresh the authentication cookie so the new Role is reflected
+                // in User.IsInRole() immediately (e.g. VIP access to AI Chat).
+                var updatedUser = _userService.GetById(userId);
+                if (updatedUser != null)
+                {
+                    var claims = new List<Claim>
+                    {
+                        new Claim(ClaimTypes.NameIdentifier, updatedUser.Id.ToString()),
+                        new Claim(ClaimTypes.Name, updatedUser.Username),
+                        new Claim(ClaimTypes.Email, updatedUser.Email),
+                        new Claim(ClaimTypes.Role, updatedUser.Role),
+                        new Claim("FullName", updatedUser.FullName)
+                    };
+
+                    var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                    var principal = new ClaimsPrincipal(identity);
+
+                    await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+                }
+
                 TempData["Success"] = $"Thanh toán thành công! {(Type == "Points" ? $"Bạn đã nhận được {Amount:N0} điểm." : "Bạn đã trở thành VIP!")}";
                 return RedirectToPage("/Dashboard");
             }
