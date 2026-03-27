@@ -1,0 +1,74 @@
+@page
+@model RazorPage_test.Pages.AdminDashboard.CreateModel
+@{
+    ViewData["Title"] = "Thêm Món Đề Xuất";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .admin-container { max-width: 600px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.05); }
+    h1 { margin-top: 0; font-size: 24px; margin-bottom: 24px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #475569; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; box-sizing: border-box; }
+    input:focus, select:focus, textarea:focus { border-color: #3b82f6; outline: none; }
+    .btn-submit { background: #3b82f6; color: white; border: none; padding: 12px 20px; font-size: 15px; font-weight: 600; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 10px; }
+    .btn-submit:hover { background: #2563eb; }
+    .btn-back { display: block; text-align: center; margin-top: 16px; font-size: 14px; color: #64748b; text-decoration: none; }
+    .text-danger { color: #ef4444; font-size: 12px; margin-top: 4px; display: block; }
+</style>
+
+<div class="admin-container">
+    <h1>Thêm món đề xuất</h1>
+
+    @if (!Model.AvailableTypes.Any())
+    {
+        <div style="background:#fee2e2; color:#b91c1c; padding:16px; border-radius:8px;">
+            Đã có đủ 3 bữa (Sáng, Trưa, Tối). Bạn không thể tạo mới, chỉ có thể chỉnh sửa hoặc xoá bớt.
+        </div>
+        <a href="/AdminDashboard/Meals" class="btn-back">Quay lại danh sách</a>
+    }
+    else
+    {
+        <form method="post">
+            <div class="form-group">
+                <label>Loại bữa ăn</label>
+                <select asp-for="Meal.MealType" required>
+                    @if (Model.AvailableTypes.Contains("Breakfast")) { <option value="Breakfast">Bữa Sáng</option> }
+                    @if (Model.AvailableTypes.Contains("Lunch")) { <option value="Lunch">Bữa Trưa</option> }
+                    @if (Model.AvailableTypes.Contains("Dinner")) { <option value="Dinner">Bữa Tối</option> }
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Tên món</label>
+                <input type="text" asp-for="Meal.Name" required />
+            </div>
+            <div class="form-group">
+                <label>Icon / Emoji</label>
+                <input type="text" asp-for="Meal.Icon" placeholder="🍲" required />
+            </div>
+            <div style="display:flex; gap:16px;">
+                <div class="form-group" style="flex:1;">
+                    <label>Calories (kcal)</label>
+                    <input type="number" asp-for="Meal.Calories" required />
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>Thời gian (phút)</label>
+                    <input type="number" asp-for="Meal.Minutes" required />
+                </div>
+            </div>
+            <div class="form-group">
+                <label>Mô tả ngắn</label>
+                <textarea asp-for="Meal.Description" rows="3" required></textarea>
+            </div>
+            
+            @if (!ModelState.IsValid)
+            {
+                <div class="text-danger" asp-validation-summary="All"></div>
+            }
+
+            <button type="submit" class="btn-submit">Lưu Món Ăn</button>
+            <a href="/AdminDashboard/Meals" class="btn-back">Hủy</a>
+        </form>
+    }
+</div>

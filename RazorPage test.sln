@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.14.36811.4 d17.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RazorPage test", "RazorPage test\RazorPage test.csproj", "{E2D1C71D-864C-4BA8-B5D4-34710A7B99AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DAL", "DAL\DAL.csproj", "{F2F3E54A-3A5B-43A1-83E7-435EF7023311}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BLL", "BLL\BLL.csproj", "{BA9AA102-D7C4-4401-91CE-11D62F4E0C4D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E2D1C71D-864C-4BA8-B5D4-34710A7B99AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E2D1C71D-864C-4BA8-B5D4-34710A7B99AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E2D1C71D-864C-4BA8-B5D4-34710A7B99AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E2D1C71D-864C-4BA8-B5D4-34710A7B99AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F2F3E54A-3A5B-43A1-83E7-435EF7023311}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F2F3E54A-3A5B-43A1-83E7-435EF7023311}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F2F3E54A-3A5B-43A1-83E7-435EF7023311}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F2F3E54A-3A5B-43A1-83E7-435EF7023311}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA9AA102-D7C4-4401-91CE-11D62F4E0C4D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA9AA102-D7C4-4401-91CE-11D62F4E0C4D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA9AA102-D7C4-4401-91CE-11D62F4E0C4D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA9AA102-D7C4-4401-91CE-11D62F4E0C4D}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {11743A45-0E11-4795-A456-ACF45047840E}
+	EndGlobalSection
+EndGlobal

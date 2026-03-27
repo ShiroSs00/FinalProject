@@ -1,0 +1,547 @@
+@page
+@model RazorPage_test.Pages.DashboardModel
+@{
+    ViewData["Title"] = "Tổng quan";
+    Layout = "_UserLayout";
+}
+        <!-- Header -->
+        <header class="dash-header">
+            <div>
+                <h1>👋 Chào buổi sáng, @Model.UserName!</h1>
+                <p>Hôm nay bạn muốn ăn gì để khỏe mạnh hơn?</p>
+            </div>
+            <div class="header-badge">
+                <span>🗓️ @DateTime.Now.ToString("dd/MM/yyyy")</span>
+            </div>
+        </header>
+
+        @if (TempData["Success"] != null)
+        {
+            <div style="background: #dcfce7; color: #166534; padding: 16px; border-radius: 12px; margin-bottom: 24px; font-weight: 600; display: flex; align-items: center; gap: 12px; animation: modalSlideUp 0.3s ease-out;">
+                <span>✅</span> @TempData["Success"]
+            </div>
+        }
+
+        <!-- Stats Cards -->
+        <section id="overview" class="stats-grid">
+            @if (Model.Profile != null)
+            {
+                <div class="stat-card card-green">
+                    <div class="stat-icon">🔥</div>
+                    <div class="stat-info">
+                        <span class="stat-value">@(Model.TodayRecord?.CaloriesConsumed ?? 0) / @Model.Profile.Tdee</span>
+                        <span class="stat-label">Calo hôm nay</span>
+                    </div>
+                </div>
+                <div class="stat-card card-blue">
+                    <div class="stat-icon">📊</div>
+                    <div class="stat-info">
+                        <span class="stat-value">@Model.Profile.Bmi</span>
+                        <span class="stat-label">BMI (@Model.Profile.BmiCategory)</span>
+                    </div>
+                </div>
+                <div class="stat-card card-purple">
+                    <div class="stat-icon">⚖️</div>
+                    <div class="stat-info">
+                        <span class="stat-value">@Model.Profile.Weight kg</span>
+                        <span class="stat-label">Cân nặng</span>
+                    </div>
+                </div>
+                <div class="stat-card card-orange">
+                    <div class="stat-icon">🎯</div>
+                    <div class="stat-info">
+                        <span class="stat-value">@(Model.Profile.Goal == "GiamCan" ? "Giảm cân" : Model.Profile.Goal == "TangCo" ? "Tăng cơ" : "Duy trì")</span>
+                        <span class="stat-label">Mục tiêu</span>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div style="grid-column: 1 / -1; background: #fff; padding: 24px; border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 16px;">
+                    <span style="font-size: 32px;">👤</span>
+                    <div>
+                        <h3 style="margin:0 0 4px 0; color:#0f172a;">Chưa có dữ liệu sức khỏe</h3>
+                        <p style="margin:0; font-size:14px; color:#64748b;">Vui lòng <a href="/Profile" style="color:#16a34a; font-weight:600;">cập nhật Hồ sơ</a> để xem lượng Calo và phân tích BMI, TDEE.</p>
+                    </div>
+                </div>
+            }
+        </section>
+
+        @if (Model.Profile != null)
+        {
+            <!-- Daily Analytics & Log Form -->
+            <section class="section">
+                <div class="section-header">
+                    <h2>📈 Phân tích năng lượng tuần qua</h2>
+                </div>
+                <div class="analytics-container" style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px;">
+                    <!-- Chart -->
+                    <div style="background:#fff; border-radius:16px; padding:20px; box-shadow:0 2px 10px rgba(0,0,0,0.05);">
+                        <canvas id="dailyChart" style="width: 100%; height: 260px;"></canvas>
+                    </div>
+                    
+                    <!-- Quick Log Form -->
+                    <div style="background:#fff; border-radius:16px; padding:24px; box-shadow:0 2px 10px rgba(0,0,0,0.05); display: flex; flex-direction: column; justify-content: center;">
+                        <h3 style="margin-top:0; color:#0f172a; font-size:18px;">Thêm Calo đã ăn 🍔</h3>
+                        <p style="font-size:13px; color:#64748b; margin-bottom:16px;">Ghi chú lượng dính dưỡng nạp vào để tiện theo dõi tiến trình.</p>
+                        <form method="post" asp-page-handler="LogCalories" style="display:flex; flex-direction:column; gap:12px;">
+                            <input type="number" asp-for="CaloriesToAdd" min="1" max="5000" placeholder="VD: 450 (kcal)" required 
+                                   style="padding:12px 16px; border:2px solid #e2e8f0; border-radius:12px; font-size:15px; outline:none;" />
+                            <button type="submit" style="background:#16a34a; color:#fff; border:none; padding:12px; border-radius:12px; font-weight:700; font-size:15px; cursor:pointer;" onmouseover="this.style.background='#15803d'" onmouseout="this.style.background='#16a34a'">Lưu ngay</button>
+                        </form>
+                    </div>
+                </div>
+            </section>
+        }
+
+        <!-- Featured Recipes -->
+        <section id="recipes" class="section">
+            <div class="section-header">
+                <h2>🍽️ Công thức nổi bật hôm nay</h2>
+            </div>
+            
+            <div class="recipe-grid">
+                @if (!Model.RecommendedMeals.Any())
+                {
+                    <div style="grid-column: 1 / -1; text-align: center; color: #64748b; padding: 20px;">
+                        Chưa có thực đơn nào được Admin lên sóng hôm nay.
+                    </div>
+                }
+                else
+                {
+                    foreach (var meal in Model.RecommendedMeals.OrderBy(m => m.MealType == "Breakfast" ? 1 : m.MealType == "Lunch" ? 2 : 3))
+                    {
+                        <div class="recipe-card">
+                            <div class="recipe-thumb">@meal.Icon</div>
+                            <div class="recipe-body">
+                                <h3>@meal.Name</h3>
+                                <p>@meal.Description</p>
+                                <div class="recipe-meta">
+                                    <span class="badge badge-green">@meal.Calories kcal</span>
+                                    <span class="badge badge-blue">⏱ @meal.Minutes phút</span>
+                                </div>
+                                <button class="btn-review" onclick="openReviewModal('@meal.Name')">⭐ Đánh giá món</button>
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+        </section>
+
+        <!-- Nutrition tips (Giữ nguyên) -->
+        <section id="tips" class="section">
+            <div class="section-header">
+                <h2>💡 Mẹo sống khỏe</h2>
+            </div>
+            <div class="tips-grid">
+                <div class="tip-card">
+                    <span class="tip-icon">🌅</span>
+                    <div>
+                        <strong>Bữa sáng quan trọng!</strong>
+                        <p>Đừng bỏ bữa sáng – đây là nguồn năng lượng nền tảng cho cả ngày.</p>
+                    </div>
+                </div>
+                <div class="tip-card">
+                    <span class="tip-icon">🧃</span>
+                    <div>
+                        <strong>Uống đủ nước</strong>
+                        <p>Ít nhất 2 lít nước mỗi ngày giúp cơ thể hoạt động tối ưu.</p>
+                    </div>
+                </div>
+                <div class="tip-card">
+                    <span class="tip-icon">🥦</span>
+                    <div>
+                        <strong>Ăn nhiều rau xanh</strong>
+                        <p>Rau xanh cung cấp chất xơ, vitamin và giúp tiêu hoá tốt hơn.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
+    <script>
+        // Khởi tạo kết nối SignalR
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/recipeHub")
+            .configureLogging(signalR.LogLevel.Information)
+            .build();
+
+        // Lắng nghe sự kiện từ Admin
+        connection.on("ReceiveNewMenu", function (menu) {
+            console.log("Nhận được thực đơn mới: ", menu);
+
+            const recipeGrid = document.querySelector(".recipe-grid");
+            if (!recipeGrid) return; // Đảm bảo DOM đã tải
+
+            // Xóa HTML cũ
+            recipeGrid.innerHTML = "";
+
+            // Mảng 3 bữa
+            const meals = [menu.breakfast, menu.lunch, menu.dinner];
+
+            meals.forEach(m => {
+                if (m && m.name) {
+                    const card = document.createElement("div");
+                    card.className = "recipe-card";
+                    card.innerHTML = `
+                        <div class="recipe-thumb">${m.icon || '🍽️'}</div>
+                        <div class="recipe-body">
+                            <h3>${m.name}</h3>
+                            <p>${m.description}</p>
+                            <div class="recipe-meta">
+                                <span class="badge badge-green">${m.calories} kcal</span>
+                                <span class="badge badge-blue">⏱ ${m.minutes} phút</span>
+                            </div>
+                            <button class="btn-review" onclick="openReviewModal('${m.name}')">⭐ Đánh giá món</button>
+                        </div>
+                    `;
+                    recipeGrid.appendChild(card);
+                }
+            });
+
+            // Tùy chọn: Thêm hiệu ứng flash hoặc toast thông báo
+            const header = document.querySelector("#recipes h2");
+            const originalText = header.innerText;
+            header.innerText = "✨ Thực đơn vừa được Admin cập nhật!";
+            header.style.color = "#16a34a";
+            setTimeout(() => {
+                header.innerText = originalText;
+                header.style.color = "";
+            }, 4000);
+        });
+
+        // Bắt đầu kết nối
+        connection.start().then(function () {
+            console.log("Đã kết nối SignalR RecipeHub!");
+        }).catch(function (err) {
+            return console.error(err.toString());
+        });
+    </script>
+    
+    @if (Model.Profile != null)
+    {
+        <!-- Chart.js -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <script>
+            // Lấy dữ liệu 7 ngày qua từ Model.Last7Days
+            // Chuẩn bị biến Data cho JS
+            const rawData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Last7Days.Select(r => new { date = r.Date.ToString("dd/MM"), calo = r.CaloriesConsumed })));
+            const tdee = @Model.Profile.Tdee;
+            
+            // Xây dựng nhãn X (7 ngày qua)
+            let labels = [];
+            let caloData = [];
+            let tdeeLine = [];
+            
+            // Loop lùi từ hôm nay
+            for (let i = 6; i >= 0; i--) {
+                let d = new Date();
+                d.setDate(d.getDate() - i);
+                let dateStr = d.toLocaleDateString('vi-VN', {day: '2-digit', month: '2-digit'});
+                labels.push(dateStr);
+                
+                let matchingRecord = rawData.find(x => x.date === dateStr);
+                caloData.push(matchingRecord ? matchingRecord.calo : 0);
+                tdeeLine.push(tdee);
+            }
+
+            const ctx = document.getElementById('dailyChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Lượng Calo Nạp Vào',
+                            data: caloData,
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.3,
+                            pointRadius: 4,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#3b82f6'
+                        },
+                        {
+                            label: 'Mục Tiêu TDEE',
+                            data: tdeeLine,
+                            borderColor: '#ef4444',
+                            borderWidth: 2,
+                            borderDash: [5, 5],
+                            pointRadius: 0,
+                            fill: false
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { position: 'top', labels: { font: { family: 'Inter' } } }
+                    },
+                    scales: {
+                        y: { beginAtZero: true, grid: { color: '#f1f5f9' }, title: { display: true, text: 'Calo (kcal)' } },
+                        x: { grid: { display: false } }
+                    }
+                }
+            });
+        </script>
+    }
+    <!-- Review Modal -->
+    <div id="reviewModal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 500px; max-height: 90vh; display: flex; flex-direction: column;">
+            <button class="modal-close" onclick="closeReviewModal()">✕</button>
+            <h2 style="margin-bottom: 8px; font-size: 20px; text-align: center;">Đánh giá bữa ăn 🍽️</h2>
+            <p id="modalMealName" style="text-align: center; color: #64748b; font-weight: 600; margin-bottom: 20px;"></p>
+            
+            <!-- Review List Container -->
+            <div id="reviewList" style="flex: 1; overflow-y: auto; background: #f8fafc; border-radius: 12px; padding: 16px; margin-bottom: 16px; display: flex; flex-direction: column; gap: 12px; min-height: 250px;">
+                <!-- Reviews will be injected here -->
+                <div style="text-align:center; color:#94a3b8; font-size:14px; padding: 20px;">Đang tải bình luận...</div>
+            </div>
+
+            <!-- Review Input Form -->
+            <form id="reviewForm" onsubmit="submitReview(event)" style="background: #fff; border-top: 1px solid #e2e8f0; padding-top: 16px;">
+                @Html.AntiForgeryToken()
+                <input type="hidden" id="inputMealName" />
+                <input type="hidden" id="editReviewId" value="0" />
+                
+                <div class="star-rating" style="margin-bottom: 12px;">
+                    <input type="radio" id="star5" name="rating" value="5" required /><label for="star5" title="5 sao">★</label>
+                    <input type="radio" id="star4" name="rating" value="4" /><label for="star4" title="4 sao">★</label>
+                    <input type="radio" id="star3" name="rating" value="3" /><label for="star3" title="3 sao">★</label>
+                    <input type="radio" id="star2" name="rating" value="2" /><label for="star2" title="2 sao">★</label>
+                    <input type="radio" id="star1" name="rating" value="1" /><label for="star1" title="1 sao">★</label>
+                </div>
+
+                <div style="display:flex; gap: 8px;">
+                    <textarea id="reviewComment" class="review-textarea" placeholder="Chia sẻ cảm nhận của bạn..." style="margin-bottom:0; flex:1; min-height: 48px; height: 48px; border-radius: 24px; padding: 12px 20px; resize: none;"></textarea>
+                    
+                    <button type="submit" id="btnSubmitReview" style="background: #16a34a; color: #fff; border: none; width: 48px; height: 48px; border-radius: 50%; display:flex; justify-content:center; align-items:center; cursor: pointer; transition: 0.2s;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+                    </button>
+                    <button type="button" id="btnCancelEdit" onclick="cancelEdit()" style="display:none; background: #64748b; color: #fff; border: none; width: 48px; height: 48px; border-radius: 50%; display:flex; justify-content:center; align-items:center; cursor: pointer;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <p id="rewardMsg" style="font-size: 12px; color: #64748b; text-align: center; margin-top: 12px; margin-bottom: 0;">Bạn sẽ nhận được 10 điểm thưởng cho lần đánh giá đầu tiên!</p>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentOpenMeal = null;
+        let token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+        async function openReviewModal(mealName) {
+            currentOpenMeal = mealName;
+            document.getElementById('modalMealName').innerText = mealName;
+            document.getElementById('inputMealName').value = mealName;
+            document.getElementById('reviewModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+            
+            cancelEdit();
+            await loadReviews(mealName);
+        }
+
+        async function loadReviews(mealName) {
+            const listObj = document.getElementById('reviewList');
+            listObj.innerHTML = '<div style="text-align:center; color:#94a3b8; font-size:14px; padding: 20px;">Đang tải bình luận...</div>';
+            
+            try {
+                const response = await fetch(`/Dashboard?handler=LoadReviewsAjax&mealName=${encodeURIComponent(mealName)}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    renderReviews(result.data);
+                }
+            } catch (err) {
+                console.error(err);
+                listObj.innerHTML = '<div style="text-align:center; color:#ef4444; font-size:14px; padding: 20px;">Lỗi tải dữ liệu.</div>';
+            }
+        }
+
+        function renderReviews(reviews) {
+            const listObj = document.getElementById('reviewList');
+            listObj.innerHTML = '';
+            
+            if (!reviews || reviews.length === 0) {
+                listObj.innerHTML = '<div style="text-align:center; color:#94a3b8; font-size:14px; padding: 20px;">Chưa có đánh giá nào. Hãy là người đầu tiên!</div>';
+                return;
+            }
+
+            reviews.forEach(r => appendReviewToDOM(r, true));
+            listObj.scrollTop = listObj.scrollHeight;
+        }
+
+        function appendReviewToDOM(review, appendToEnd = true) {
+            const oldDiv = document.getElementById(`review-${review.id}`);
+            if (oldDiv) oldDiv.remove();
+
+            const listObj = document.getElementById('reviewList');
+            if(listObj.querySelector('div[style*="text-align:center"]')) listObj.innerHTML = '';
+
+            const rDiv = document.createElement('div');
+            rDiv.id = `review-${review.id}`;
+            rDiv.style.cssText = "background: #fff; padding: 12px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);";
+            
+            let stars = '';
+            for(let i=1; i<=5; i++) {
+                stars += `<span style="color: ${i <= review.rating ? '#f59e0b' : '#e2e8f0'}">★</span>`;
+            }
+
+            let dateObj = new Date(review.createdAt);
+            let timeStr = dateObj.toLocaleTimeString('vi-VN', {hour: '2-digit', minute:'2-digit'}) + ' ' + dateObj.toLocaleDateString('vi-VN');
+
+            let actionBtns = '';
+            if (review.isMine) {
+                // Thoát ngoặc kép an toàn cho comment
+                const safeComment = review.comment.replace(/'/g, "\\'").replace(/"/g, '\\"');
+                actionBtns = `
+                    <div style="display:flex; gap: 8px; margin-top: 8px;">
+                        <span style="font-size:11px; color:#3b82f6; cursor:pointer;" onclick="editReview(${review.id}, ${review.rating}, '${safeComment}')">Sửa</span>
+                        <span style="font-size:11px; color:#ef4444; cursor:pointer;" onclick="deleteReview(${review.id})">Xóa</span>
+                    </div>
+                `;
+            }
+
+            rDiv.innerHTML = `
+                <div style="display: flex; gap: 12px;">
+                    <div style="width:32px; height:32px; border-radius:50%; background:#e2e8f0; display:flex; justify-content:center; align-items:center; font-weight:700; font-size:13px; color:#475569; flex-shrink:0;">
+                        ${review.userInitial}
+                    </div>
+                    <div style="flex: 1;">
+                        <div style="display:flex; justify-content:space-between; align-items:baseline;">
+                            <strong style="font-size:13px; color:#0f172a;">${review.userName}</strong>
+                            <span style="font-size:11px; color:#94a3b8;">${timeStr}</span>
+                        </div>
+                        <div style="font-size: 14px; margin-bottom: 4px;">${stars}</div>
+                        <div style="font-size:13px; color:#334155; word-break: break-word;">${review.comment}</div>
+                        ${actionBtns}
+                    </div>
+                </div>
+            `;
+
+            if(appendToEnd) {
+                listObj.appendChild(rDiv);
+            } else {
+                listObj.prepend(rDiv);
+            }
+        }
+
+        async function submitReview(e) {
+            e.preventDefault();
+            const mealName = document.getElementById('inputMealName').value;
+            const ratingInput = document.querySelector('input[name="rating"]:checked');
+            if (!ratingInput) { alert("Vui lòng chọn số sao đánh giá."); return; }
+            
+            const rating = parseInt(ratingInput.value);
+            const comment = document.getElementById('reviewComment').value;
+            const editId = parseInt(document.getElementById('editReviewId').value);
+            
+            const btn = document.getElementById('btnSubmitReview');
+            btn.disabled = true;
+
+            const payload = { id: editId, mealName, rating, comment };
+            const handlerStr = editId > 0 ? 'EditReviewAjax' : 'SubmitReviewAjax';
+            token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+
+            try {
+                const res = await fetch(`/Dashboard?handler=${handlerStr}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': token },
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await res.json();
+                if (result.success) {
+                    appendReviewToDOM(result.data, false);
+                    if(result.message) {
+                        const rewardMsg = document.getElementById('rewardMsg');
+                        rewardMsg.innerText = result.message;
+                        rewardMsg.style.color = '#16a34a';
+                    }
+                    cancelEdit();
+                } else {
+                    alert(result.message);
+                }
+            } catch(err) { console.error(err); }
+            
+            btn.disabled = false;
+        }
+
+        function editReview(id, rating, comment) {
+            document.getElementById('editReviewId').value = id;
+            document.getElementById(`star${rating}`).checked = true;
+            document.getElementById('reviewComment').value = comment;
+            
+            const subBtn = document.getElementById('btnSubmitReview');
+            subBtn.style.background = '#f59e0b';
+            subBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 13l4 4L19 7"/></svg>';
+            document.getElementById('btnCancelEdit').style.display = 'flex';
+        }
+
+        function cancelEdit() {
+            document.getElementById('editReviewId').value = "0";
+            const checkedStar = document.querySelector('input[name="rating"]:checked');
+            if(checkedStar) checkedStar.checked = false;
+            document.getElementById('reviewComment').value = "";
+            
+            const subBtn = document.getElementById('btnSubmitReview');
+            subBtn.style.background = '#16a34a';
+            subBtn.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>';
+            document.getElementById('btnCancelEdit').style.display = 'none';
+        }
+
+        async function deleteReview(id) {
+            if(!confirm("Bạn có chắc chắn muốn xóa bình luận này?")) return;
+            
+            token = document.querySelector('input[name="__RequestVerificationToken"]')?.value;
+            try {
+                const res = await fetch(`/Dashboard?handler=DeleteReviewAjax`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'RequestVerificationToken': token },
+                    body: JSON.stringify({ id: id, mealName: currentOpenMeal })
+                });
+                const result = await res.json();
+                if(result.success) {
+                    const el = document.getElementById(`review-${id}`);
+                    if(el) el.remove();
+                }
+            } catch(err) { console.error(err); }
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+            currentOpenMeal = null;
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('reviewModal');
+            if (event.target == modal) closeReviewModal();
+        }
+
+        // --- SignalR for Reviews --- //
+        connection.on("ReceiveNewReview", function (mealName, review) {
+            if (currentOpenMeal === mealName && !review.isMine) {
+                review.isMine = false; // Bắt buộc false nếu broadcast lại từ user khác
+                appendReviewToDOM(review, false);
+            }
+        });
+
+        connection.on("ReviewUpdated", function (mealName, review) {
+            if (currentOpenMeal === mealName && !review.isMine) {
+                review.isMine = false;
+                appendReviewToDOM(review, false);
+            }
+        });
+
+        connection.on("ReviewDeleted", function (mealName, reviewId) {
+            if (currentOpenMeal === mealName) {
+                const el = document.getElementById(`review-${reviewId}`);
+                if(el) el.remove();
+            }
+        });
+    </script>

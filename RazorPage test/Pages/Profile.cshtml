@@ -1,0 +1,116 @@
+@page
+@model RazorPage_test.Pages.ProfileModel
+@{
+    ViewData["Title"] = "Hồ sơ sức khỏe";
+    Layout = "_UserLayout";
+}
+@section Styles {
+    <link rel="stylesheet" href="~/css/profile.css" />
+}
+        <header class="dash-header">
+            <div>
+                <h1>👤 Ho so suc khoe</h1>
+                <p>Nhap chi so de AI tinh toan thuc don phu hop voi ban</p>
+            </div>
+        </header>
+
+        <div class="profile-grid">
+            <!-- Form -->
+            <div class="profile-form-card">
+                <h2>Chi so co the</h2>
+
+                @if (Model.Saved)
+                {
+                    <div class="alert-success-inline">✅ Da luu thanh cong!</div>
+                }
+
+                <form method="post" class="profile-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Tuoi</label>
+                            <input type="number" name="Age" value="@Model.Profile.Age" min="10" max="100" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Gioi tinh</label>
+                            <select name="Gender">
+                                <option value="Nam" selected="@(Model.Profile.Gender=="Nam")">Nam</option>
+                                <option value="Nu" selected="@(Model.Profile.Gender=="Nu")">Nu</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Chieu cao (cm)</label>
+                            <input type="number" name="Height" value="@Model.Profile.Height" step="0.1" min="100" max="250" required />
+                        </div>
+                        <div class="form-group">
+                            <label>Can nang (kg)</label>
+                            <input type="number" name="Weight" value="@Model.Profile.Weight" step="0.1" min="30" max="300" required />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Muc do van dong</label>
+                        <select name="ActivityLevel">
+                            <option value="Sedentary"       selected="@(Model.Profile.ActivityLevel=="Sedentary")">It van dong (ngoi van phong)</option>
+                            <option value="LightlyActive"   selected="@(Model.Profile.ActivityLevel=="LightlyActive")">Van dong nhe (1-3 buoi/tuan)</option>
+                            <option value="ModeratelyActive"selected="@(Model.Profile.ActivityLevel=="ModeratelyActive")">Van dong vua (3-5 buoi/tuan)</option>
+                            <option value="VeryActive"      selected="@(Model.Profile.ActivityLevel=="VeryActive")">Van dong nhieu (6-7 buoi/tuan)</option>
+                            <option value="ExtraActive"     selected="@(Model.Profile.ActivityLevel=="ExtraActive")">Van dong rat nhieu (2 ca/ngay)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Muc tieu</label>
+                        <div class="goal-pills">
+                            <label class="pill @(Model.Profile.Goal=="GiamCan"?"active":"")">
+                                <input type="radio" name="Goal" value="GiamCan" @(Model.Profile.Goal=="GiamCan"?"checked":"") /> 🔥 Giam can
+                            </label>
+                            <label class="pill @(Model.Profile.Goal=="DuyTri"?"active":"")">
+                                <input type="radio" name="Goal" value="DuyTri" @(Model.Profile.Goal=="DuyTri"?"checked":"") /> ⚖️ Duy tri
+                            </label>
+                            <label class="pill @(Model.Profile.Goal=="TangCo"?"active":"")">
+                                <input type="radio" name="Goal" value="TangCo" @(Model.Profile.Goal=="TangCo"?"checked":"") /> 💪 Tang co
+                            </label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">Luu va tinh toan</button>
+                </form>
+            </div>
+
+            <!-- Stats card -->
+            @if (Model.Profile.Bmi > 0)
+            {
+                <div class="stats-side">
+                    <div class="bmi-card">
+                        <div class="bmi-value">@Model.Profile.Bmi</div>
+                        <div class="bmi-label">BMI</div>
+                        <div class="bmi-category @Model.BmiClass">@Model.Profile.BmiCategory</div>
+                        <div class="bmi-scale">
+                            <div class="bmi-bar">
+                                <div class="bmi-pointer" style="left: @Model.BmiPointerLeft%"></div>
+                            </div>
+                            <div class="bmi-scale-labels">
+                                <span>Thieu can<br/>&lt;18.5</span>
+                                <span>Binh thuong<br/>18.5-25</span>
+                                <span>Thua can<br/>25-30</span>
+                                <span>Beo phi<br/>&gt;30</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tdee-card">
+                        <div class="tdee-icon">⚡</div>
+                        <div class="tdee-value">@Model.Profile.Tdee <span>kcal/ngay</span></div>
+                        <div class="tdee-label">Nhu cau calo khuyen nghi</div>
+                        <a href="/MenuChat" class="btn-go-chat">🤖 Gen menu ngay →</a>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="stats-side">
+                    <div class="empty-stats">
+                        <div style="font-size:64px">📊</div>
+                        <p>Nhap chi so va nhan "Luu va tinh toan" de xem BMI va TDEE cua ban</p>
+                    </div>
+                </div>
+            }
+        </div>

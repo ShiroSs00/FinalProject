@@ -1,0 +1,76 @@
+@page
+@model RazorPage_test.Pages.Payment.CheckoutModel
+@{
+    ViewData["Title"] = "Thanh toán";
+    Layout = "_UserLayout";
+}
+
+<div class="container py-5" style="min-height: 80vh; display: flex; align-items: center; justify-content: center;">
+    <div class="row w-100 justify-content-center">
+        <div class="col-lg-5 col-md-8">
+            <div class="card border-0" style="border-radius: 20px; box-shadow: 0 15px 50px rgba(0,0,0,0.08); overflow: hidden;">
+                <!-- Header Card -->
+                <div class="bg-dark text-white p-4 position-relative" style="background: linear-gradient(135deg, #1e293b, #0f172a);">
+                    <div class="position-absolute top-0 end-0 p-3 opacity-25">
+                        <i class="bi bi-credit-card-fill" style="font-size: 80px; margin-top: -30px; margin-right: -20px;"></i>
+                    </div>
+                    <h5 class="fw-bold mb-1 position-relative z-1 text-uppercase tracking-wider shadow-sm">Thanh Toán An Toàn</h5>
+                    <p class="text-white text-opacity-75 small mb-0 position-relative z-1">Mã hóa bảo mật 256-bit</p>
+                    
+                    <div class="mt-4 pt-2">
+                        <p class="mb-1 text-white text-opacity-75 small">Nội dung chuyển khoản:</p>
+                        <h4 class="fw-bold text-warning mb-0">@(Model.Type == "VIP" ? "Nâng cấp Gói VIP (1 tháng)" : $"Nạp {Model.Amount:N0} Điểm Nutri")</h4>
+                    </div>
+                </div>
+
+                <div class="card-body p-4 p-md-5 bg-white">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger rounded-3 fw-medium border-0 bg-danger bg-opacity-10 text-danger mb-4">@TempData["Error"]</div>
+                    }
+
+                    <div class="text-center mb-4 pb-3 border-bottom border-light">
+                        <h1 class="display-4 fw-bolder text-dark mb-0">@Model.Amount.ToString("N0")<span class="fs-4 text-muted ms-2">VNĐ</span></h1>
+                    </div>
+
+                    <form method="post">
+                        <input type="hidden" asp-for="Type" />
+                        <input type="hidden" asp-for="Amount" />
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted fw-bold small text-uppercase">Tên in trên thẻ</label>
+                            <input type="text" class="form-control form-control-lg bg-light border-0" style="border-radius: 12px;" placeholder="NGUYEN VAN A" required value="TEST USER" />
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label text-muted fw-bold small text-uppercase">Số thẻ</label>
+                            <div class="input-group">
+                                <span class="input-group-text border-0 bg-light" style="border-top-left-radius: 12px; border-bottom-left-radius: 12px;"><i class="bi bi-credit-card"></i></span>
+                                <input type="text" class="form-control form-control-lg bg-light border-0" style="border-top-right-radius: 12px; border-bottom-right-radius: 12px;" placeholder="9704 1985 1234 5678" required value="9704 1234 5678 9012" />
+                            </div>
+                        </div>
+                        
+                        <div class="row mb-5">
+                            <div class="col-6">
+                                <label class="form-label text-muted fw-bold small text-uppercase">Ngày hết hạn</label>
+                                <input type="text" class="form-control form-control-lg bg-light border-0" style="border-radius: 12px;" placeholder="MM/YY" required value="12/28" />
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label text-muted fw-bold small text-uppercase">Mã CVV</label>
+                                <input type="password" class="form-control form-control-lg bg-light border-0" style="border-radius: 12px;" placeholder="•••" required value="123" />
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-dark w-100 btn-lg rounded-pill fw-bold py-3 shadow-sm hover-lift" style="transition: all 0.2s;" onmouseover="this.className='btn btn-success w-100 btn-lg rounded-pill fw-bold py-3 shadow-lg'" onmouseout="this.className='btn btn-dark w-100 btn-lg rounded-pill fw-bold py-3 shadow-sm'">
+                            Xác nhận Thanh toán <i class="bi bi-arrow-right ms-2"></i>
+                        </button>
+                    </form>
+                    
+                    <div class="text-center mt-4">
+                        <a href="/Payment/Index" class="text-decoration-none text-muted small fw-medium" style="transition: 0.2s;" onmouseover="this.className='text-decoration-underline text-primary small fw-medium'" onmouseout="this.className='text-decoration-none text-muted small fw-medium'"><i class="bi bi-arrow-left me-1"></i> Quay lại Đổi gói khác</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

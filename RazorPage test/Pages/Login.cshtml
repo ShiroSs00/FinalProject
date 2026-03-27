@@ -1,0 +1,78 @@
+@page
+@model RazorPage_test.Pages.LoginModel
+@{
+    ViewData["Title"] = "Đăng nhập";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập – NutriFood</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/auth.css" />
+</head>
+<body class="auth-body">
+    <div class="auth-wrapper">
+        <!-- Left panel -->
+        <div class="auth-banner">
+            <div class="banner-content">
+                <div class="logo">🥗</div>
+                <h1>NutriFood</h1>
+                <p>Khám phá thế giới ẩm thực lành mạnh và dinh dưỡng cùng chúng tôi</p>
+                <ul class="feature-list">
+                    <li>✅ Thực đơn dinh dưỡng cá nhân hoá</li>
+                    <li>✅ Theo dõi lượng calo hàng ngày</li>
+                    <li>✅ Hơn 500+ công thức món ăn lành mạnh</li>
+                </ul>
+            </div>
+            <div class="floating-cards">
+                <div class="fc fc1">🥑 Avocado</div>
+                <div class="fc fc2">🍎 Táo đỏ</div>
+                <div class="fc fc3">🥦 Bông cải</div>
+            </div>
+        </div>
+
+        <!-- Right panel – Login Form -->
+        <div class="auth-panel">
+            <div class="auth-card">
+                <h2>Chào mừng trở lại!</h2>
+                <p class="subtitle">Đăng nhập để truy cập bảng điều khiển của bạn</p>
+
+                @if (!string.IsNullOrEmpty(Model.ErrorMessage))
+                {
+                    <div class="alert alert-error">⚠️ @Model.ErrorMessage</div>
+                }
+                @if (!string.IsNullOrEmpty(Model.SuccessMessage))
+                {
+                    <div class="alert alert-success">✅ @Model.SuccessMessage</div>
+                }
+
+                <form method="post" class="auth-form">
+                    <div class="form-group">
+                        <label for="username">Tên đăng nhập</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">👤</span>
+                            <input id="username" name="Username" type="text" placeholder="Nhập tên đăng nhập" required autocomplete="username" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Mật khẩu</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">🔒</span>
+                            <input id="password" name="Password" type="password" placeholder="Nhập mật khẩu" required autocomplete="current-password" />
+                        </div>
+                    </div>
+                    <button type="submit" class="btn-primary">Đăng nhập</button>
+                </form>
+
+                <p class="auth-switch">
+                    Chưa có tài khoản? <a href="/Register">Đăng ký ngay</a>
+                </p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

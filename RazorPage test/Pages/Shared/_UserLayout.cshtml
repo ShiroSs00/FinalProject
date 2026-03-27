@@ -1,0 +1,66 @@
+@using DAL.Data;
+@using Microsoft.EntityFrameworkCore;
+@inject AppDbContext DbContext
+@{
+    var username = User.Identity?.Name ?? "User";
+    var userInitial = username.Length > 0 ? username[0].ToString().ToUpper() : "U";
+    var userRecord = DbContext.Users.FirstOrDefault(u => u.Username == username);
+    var userPoints = userRecord?.Points ?? 0;
+    var userRole = userRecord?.Role == "VIP" || userRecord?.Role == "Admin" ? userRecord.Role : "Thành viên";
+    var path = ViewContext.RouteData.Values["page"]?.ToString() ?? "";
+}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] – NutriFood</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+    
+    <!-- Load Bootstrap globally for consistent grids and utilities -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+    
+    <link rel="stylesheet" href="~/css/site.css" />
+    <link rel="stylesheet" href="~/css/dashboard.css" />
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body style="background: #f1f5f9; display: flex; min-height: 100vh;">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <span class="logo-icon">🥗</span>
+            <span class="logo-text">NutriFood</span>
+        </div>
+        <nav class="sidebar-nav">
+            <a href="/Dashboard" class="nav-item @(path == "/Dashboard" ? "active" : "")"><span>🏠</span> Tổng quan</a>
+            <a href="/Profile" class="nav-item @(path == "/Profile" ? "active" : "")"><span>👤</span> Hồ sơ</a>
+            <a href="/MenuChat" class="nav-item @(path == "/MenuChat" ? "active" : "")"><span>🤖</span> AI Menu</a>
+            <a href="/Rewards/Index" class="nav-item @(path.StartsWith("/Rewards") ? "active" : "")"><span>🎁</span> Cửa Hàng Quà Tặng</a>
+            <a href="/Payment/Index" class="nav-item @(path.StartsWith("/Payment") ? "active" : "")"><span>💎</span> Nạp Điểm / VIP</a>
+        </nav>
+        <div class="sidebar-user">
+            <div class="user-avatar">@userInitial</div>
+            <div class="user-info">
+                <span class="user-name">@username</span>
+                <span class="user-role">@userRole</span>
+                <div class="points-container" title="Điểm thưởng tích lũy">
+                    <span>🎁</span> <span>@userPoints điểm</span>
+                </div>
+            </div>
+            <form method="post" asp-page="/Dashboard" asp-page-handler="Logout" style="margin: 0; display:flex;">
+                <button type="submit" class="btn-logout" title="Đăng xuất">⏻</button>
+            </form>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content" style="flex: 1; padding: 32px; display: flex; flex-direction: column; gap: 28px; margin-left: 240px; overflow-x: hidden;">
+        @RenderBody()
+    </main>
+
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

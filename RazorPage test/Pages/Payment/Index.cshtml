@@ -1,0 +1,66 @@
+@page
+@model RazorPage_test.Pages.Payment.IndexModel
+@{
+    ViewData["Title"] = "Nạp Điểm / Mua VIP";
+    Layout = "_UserLayout";
+}
+
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h1 class="fw-bolder" style="background: linear-gradient(135deg, #10b981, #0ea5e9); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 2.5rem;">Nâng Cấp Trải Nghiệm NutriFood</h1>
+        <p class="text-secondary mt-3 fs-5">Mở khóa sức mạnh AI để quản lý dinh dưỡng chuyên sâu hơn</p>
+    </div>
+    
+    <div class="row justify-content-center g-5 max-w-5xl mx-auto">
+        <!-- Nạp điểm -->
+        <div class="col-lg-5 col-md-6 mb-4">
+            <div class="card h-100 border-0" style="border-radius: 24px; box-shadow: 0 10px 40px rgba(14,165,233,0.1); transition: transform 0.3s ease;" onmouseover="this.style.transform='translateY(-10px)'" onmouseout="this.style.transform='translateY(0)'">
+                <div class="card-body text-center p-5 d-flex flex-column">
+                    <div class="mb-4 bg-primary bg-opacity-10 d-inline-flex justify-content-center align-items-center rounded-circle" style="width:80px; height:80px;">
+                        <span style="font-size:36px;">🪙</span>
+                    </div>
+                    <h3 class="card-title fw-bold text-dark mb-3">Nạp Điểm Thưởng</h3>
+                    <p class="text-muted mb-4">Tích lũy điểm để săn quà tặng trong Cửa hàng độc quyền!</p>
+                    
+                    <ul class="list-unstyled mt-3 mb-5 text-start ms-4">
+                        <li class="mb-3 d-flex align-items-center"><i class="bi bi-check-circle-fill text-primary me-2"></i> Tỷ lệ siêu hời: 1 VNĐ = 1 Điểm</li>
+                        <li class="mb-3 d-flex align-items-center"><i class="bi bi-check-circle-fill text-primary me-2"></i> Đổi E-Voucher, quà lưu niệm</li>
+                        <li class="mb-3 d-flex align-items-center"><i class="bi bi-check-circle-fill text-primary me-2"></i> Không có hạn sử dụng</li>
+                    </ul>
+                    
+                    <div class="mt-auto d-flex flex-column gap-3">
+                        <a href="/Payment/Checkout?type=Points&amount=10000" class="btn btn-outline-primary btn-lg rounded-pill fw-bold" style="border-width: 2px;">Nạp ngay 10.000đ</a>
+                        <a href="/Payment/Checkout?type=Points&amount=50000" class="btn btn-primary btn-lg rounded-pill fw-bold text-white shadow-sm" style="background: linear-gradient(to right, #0ea5e9, #2563eb); border:none;">Nạp Siêu Tốc 50.000đ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mua VIP -->
+        <div class="col-lg-5 col-md-6 mb-4">
+            <div class="card h-100 border-0 text-white position-relative" style="border-radius: 24px; background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); box-shadow: 0 20px 40px rgba(0,0,0,0.2); overflow: hidden;">
+                <div class="position-absolute top-0 end-0 bg-warning text-dark fw-bold px-4 py-2" style="border-bottom-left-radius: 12px; font-size: 0.8rem; box-shadow: -2px 2px 10px rgba(0,0,0,0.1); z-index: 10;">BÁN CHẠY NHẤT</div>
+                <div class="card-body text-center p-4 p-md-5 d-flex flex-column position-relative z-1">
+                    <div class="mb-4 d-inline-flex justify-content-center align-items-center rounded-circle" style="width:80px; height:80px; background: rgba(255,255,255,0.1);">
+                        <span style="font-size:36px;">👑</span>
+                    </div>
+                    <h3 class="card-title fw-bold text-warning mb-3">Thành Viên VIP</h3>
+                    <p class="text-light text-opacity-75 mb-4">Trải nghiệm đỉnh cao của trí tuệ nhân tạo.</p>
+                    
+                    <div class="mb-4">
+                        <span class="fs-1 fw-black text-white">99.000 đ</span>
+                        <span class="text-light text-opacity-50">/ tháng</span>
+                    </div>
+
+                    <ul class="list-unstyled mt-2 mb-5 text-start ms-4">
+                        <li class="mb-3 d-flex align-items-center"><i class="bi bi-star-fill text-warning me-2"></i> Mở khóa Menu AI siêu tốc</li>
+                        <li class="mb-3 d-flex align-items-center"><i class="bi bi-star-fill text-warning me-2"></i> Chat bot chuyên gia vô hạn</li>
+                        <li class="mb-3 d-flex align-items-center"><i class="bi bi-star-fill text-warning me-2"></i> Tắt hoàn toàn quảng cáo</li>
+                    </ul>
+                    
+                    <a href="/Payment/Checkout?type=VIP&amount=99000" class="btn btn-warning w-100 btn-lg rounded-pill fw-bold text-dark mt-auto shadow" style="transition: 0.3s transform;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">Nâng Cấp VIP Ngay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,53 @@
+@page
+@model RazorPage_test.Pages.AdminDashboard.EditModel
+@{
+    ViewData["Title"] = "Sửa Món Đề Xuất";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .admin-container { max-width: 600px; margin: 40px auto; background: #fff; padding: 32px; border-radius: 16px; box-shadow: 0 4px 16px rgba(0,0,0,0.05); }
+    h1 { margin-top: 0; font-size: 24px; margin-bottom: 24px; }
+    .form-group { margin-bottom: 16px; }
+    label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #475569; }
+    input, select, textarea { width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; font-family: 'Inter', sans-serif; box-sizing: border-box; }
+    input:focus, select:focus, textarea:focus { border-color: #f59e0b; outline: none; }
+    .btn-submit { background: #f59e0b; color: white; border: none; padding: 12px 20px; font-size: 15px; font-weight: 600; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 10px; }
+    .btn-submit:hover { background: #d97706; }
+    .btn-back { display: block; text-align: center; margin-top: 16px; font-size: 14px; color: #64748b; text-decoration: none; }
+</style>
+
+<div class="admin-container">
+    <h1>Sửa món: @(Model.Meal.MealType == "Breakfast" ? "Bữa Sáng" : Model.Meal.MealType == "Lunch" ? "Bữa Trưa" : "Bữa Tối")</h1>
+
+    <form method="post">
+        <input type="hidden" asp-for="Meal.Id" />
+        <input type="hidden" asp-for="Meal.MealType" />
+
+        <div class="form-group">
+            <label>Tên món</label>
+            <input type="text" asp-for="Meal.Name" required />
+        </div>
+        <div class="form-group">
+            <label>Icon / Emoji</label>
+            <input type="text" asp-for="Meal.Icon" required />
+        </div>
+        <div style="display:flex; gap:16px;">
+            <div class="form-group" style="flex:1;">
+                <label>Calories (kcal)</label>
+                <input type="number" asp-for="Meal.Calories" required />
+            </div>
+            <div class="form-group" style="flex:1;">
+                <label>Thời gian (phút)</label>
+                <input type="number" asp-for="Meal.Minutes" required />
+            </div>
+        </div>
+        <div class="form-group">
+            <label>Mô tả ngắn</label>
+            <textarea asp-for="Meal.Description" rows="3" required></textarea>
+        </div>
+        
+        <button type="submit" class="btn-submit">Cập nhật Lại</button>
+        <a href="/AdminDashboard/Meals" class="btn-back">Hủy</a>
+    </form>
+</div>
