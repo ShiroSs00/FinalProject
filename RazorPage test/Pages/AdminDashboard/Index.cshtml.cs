@@ -45,7 +45,7 @@ public class DashboardOverviewModel : PageModel
         // Chart Data Calculation
         var sevenDaysAgo = DateTime.UtcNow.AddDays(-7);
         var recentRevenues = _context.Transactions
-            .Where(t => t.CreatedAt >= sevenDaysAgo && t.Status == "Success")
+            .Where(t => t.CreatedAt >= sevenDaysAgo && t.Status == "Completed")
             .GroupBy(t => t.CreatedAt.Date)
             .Select(g => new { Date = g.Key, Total = g.Sum(t => t.Amount) })
             .ToList();
